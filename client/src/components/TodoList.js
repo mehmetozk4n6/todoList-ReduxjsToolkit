@@ -6,9 +6,9 @@ import Error from "./Error";
 import { useSelector, useDispatch } from "react-redux";
 import {
   toggleTodoAsync,
-  destroy,
   selectFilteredTodos,
   getTodosAsync,
+  removeItemAsync,
 } from "../redux/todos/todosSlice";
 
 function TodoList() {
@@ -21,9 +21,9 @@ function TodoList() {
     dispatch(getTodosAsync());
   }, [dispatch]);
 
-  const handleDestroy = (item) => {
+  const handleDestroy = async (id) => {
     if (window.confirm("Are you sure?")) {
-      dispatch(destroy(item));
+      await dispatch(removeItemAsync(id));
     }
   };
 
@@ -50,7 +50,10 @@ function TodoList() {
               onChange={() => handleToggle(item.id, !item.completed)}
             />
             <label>{item.title}</label>
-            <button className="destroy" onClick={() => handleDestroy(item)} />
+            <button
+              className="destroy"
+              onClick={() => handleDestroy(item.id)}
+            />
             {/* // sadece onClick olduğunda olsun dite callback ekliyoruz aksi
             takdirde component mount edilirken çağırır */}
           </div>
