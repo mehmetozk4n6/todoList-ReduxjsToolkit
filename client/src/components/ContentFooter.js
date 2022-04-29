@@ -1,9 +1,9 @@
 import { useEffect } from "react";
+import { removeItemAsync } from "../redux/todos/services";
 import {
   changeActiveFilter,
   selectActiveFilter,
   selectTodos,
-  removeItemAsync,
 } from "../redux/todos/todosSlice";
 import { useSelector, useDispatch } from "react-redux";
 
