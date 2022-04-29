@@ -1,41 +1,51 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { nanoid } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+export const getTodosAsync = createAsyncThunk(
+  "todos/getTodosAsync",
+  async () => {
+    const res = await axios(`${process.env.REACT_APP_API_BASE_ENDPOINT}/todos`);
+    return res.data;
+  }
+);
+export const addTodosAsync = createAsyncThunk(
+  "todos/addTodosAsync",
+  async (data) => {
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_BASE_ENDPOINT}/todos`,
+      data
+    );
+    return res.data;
+  }
+);
 
 // createSlice datayı kendisi klonladığından tekrar yapmamıza gerek yok
-
 export const todosSlice = createSlice({
   name: "todos",
   initialState: {
-    items: [
-      {
-        id: 1,
-        title: "Learn React",
-        completed: true,
-      },
-      {
-        id: 2,
-        title: "Read a Book",
-        completed: false,
-      },
-    ],
+    items: [],
+    isLoading: false,
+    error: null,
     activeFilter: "all",
+    addNewTodoLoading: false,
+    addNewTodoError: null,
   },
   reducers: {
     // dispatch edildiğinde ilk prepare düşer ordan çıkan obje reducer a gider
-    addTodo: {
-      reducer: (state, action) => {
-        state.items.push(action.payload);
-      },
-      prepare: (title) => {
-        return {
-          payload: {
-            id: nanoid(),
-            completed: false,
-            title,
-          },
-        };
-      },
-    },
+    // addTodo: {
+    //   reducer: (state, action) => {
+    //     state.items.push(action.payload);
+    //   },
+    //   prepare: (title) => {
+    //     return {
+    //       payload: {
+    //         id: nanoid(),
+    //         completed: false,
+    //         title,
+    //       },
+    //     };
+    //   },
+    // },
     toggle: (state, action) => {
       const { id } = action.payload;
       const item = state.items.find((item) => item.id === id);
@@ -51,6 +61,33 @@ export const todosSlice = createSlice({
     },
     clearCompleted: (state) => {
       state.items = [...state.items.filter((item) => item.completed === false)];
+    },
+  },
+  extraReducers: {
+    // get to do
+    [getTodosAsync.pending]: (state, action) => {
+      state.isLoading = true;
+    },
+    [getTodosAsync.fulfilled]: (state, action) => {
+      state.items = action.payload;
+      state.isLoading = false;
+    },
+    [getTodosAsync.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.error.message;
+    },
+
+    // add to do
+    [addTodosAsync.pending]: (state, action) => {
+      state.addNewTodoLoading = true;
+    },
+    [addTodosAsync.fulfilled]: (state, action) => {
+      state.items.push(action.payload);
+      state.addNewTodoLoading = false;
+    },
+    [addTodosAsync.rejected]: (state, action) => {
+      state.addNewTodoLoading = false;
+      state.addNewTodoError = action.error.message;
     },
   },
 });
