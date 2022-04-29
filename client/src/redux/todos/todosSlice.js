@@ -18,6 +18,16 @@ export const addTodosAsync = createAsyncThunk(
     return res.data;
   }
 );
+export const toggleTodoAsync = createAsyncThunk(
+  "todos/toggleTodoAsync",
+  async ({ id, data }) => {
+    const res = await axios.patch(
+      `${process.env.REACT_APP_API_BASE_ENDPOINT}/todos/${id}`,
+      data
+    );
+    return res.data;
+  }
+);
 
 // createSlice datayı kendisi klonladığından tekrar yapmamıza gerek yok
 export const todosSlice = createSlice({
@@ -46,11 +56,11 @@ export const todosSlice = createSlice({
     //     };
     //   },
     // },
-    toggle: (state, action) => {
-      const { id } = action.payload;
-      const item = state.items.find((item) => item.id === id);
-      item.completed = !item.completed;
-    },
+    // toggle: (state, action) => {
+    //   const { id } = action.payload;
+    //   const item = state.items.find((item) => item.id === id);
+    //   item.completed = !item.completed;
+    // },
     destroy: (state, action) => {
       state.items = [
         ...state.items.filter((item) => item.id !== action.payload.id),
@@ -89,6 +99,16 @@ export const todosSlice = createSlice({
       state.addNewTodoLoading = false;
       state.addNewTodoError = action.error.message;
     },
+
+    // toggle to do
+    // [toggleTodoAsync.pending]: (state, action) => {
+    //   state.toggleTodoAsync = true;
+    // },
+    [toggleTodoAsync.fulfilled]: (state, action) => {
+      const { id, completed } = action.payload;
+      const index = state.items.findIndex((item) => item.id === id);
+      state.items[index].completed = completed;
+    },
   },
 });
 
@@ -104,6 +124,6 @@ export function selectFilteredTodos(state) {
 }
 export const selectActiveFilter = (state) => state.todos.activeFilter;
 
-export const { addTodo, toggle, destroy, changeActiveFilter, clearCompleted } =
+export const { destroy, changeActiveFilter, clearCompleted } =
   todosSlice.actions;
 export default todosSlice.reducer;

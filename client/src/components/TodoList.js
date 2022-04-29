@@ -5,7 +5,7 @@ import Error from "./Error";
 
 import { useSelector, useDispatch } from "react-redux";
 import {
-  toggle,
+  toggleTodoAsync,
   destroy,
   selectFilteredTodos,
   getTodosAsync,
@@ -27,6 +27,10 @@ function TodoList() {
     }
   };
 
+  const handleToggle = async (id, completed) => {
+    await dispatch(toggleTodoAsync({ id, data: { completed } }));
+  };
+
   if (isLoading) {
     return <Loading />;
   }
@@ -43,7 +47,7 @@ function TodoList() {
               className="toggle"
               type="checkbox"
               checked={item.completed}
-              onChange={() => dispatch(toggle(item))}
+              onChange={() => handleToggle(item.id, !item.completed)}
             />
             <label>{item.title}</label>
             <button className="destroy" onClick={() => handleDestroy(item)} />
