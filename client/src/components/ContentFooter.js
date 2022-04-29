@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import {
   changeActiveFilter,
   clearCompleted,
@@ -12,6 +12,10 @@ function ContentFooter() {
   const items = useSelector(selectTodos);
   const activeFilter = useSelector(selectActiveFilter);
   const itemsLeft = items.filter((item) => item.completed === false);
+
+  useEffect(() => {
+    localStorage.setItem("activeFilter", activeFilter);
+  }, [activeFilter]);
 
   return (
     <footer className="footer">
