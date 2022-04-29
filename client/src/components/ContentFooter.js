@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import {
   changeActiveFilter,
-  clearCompleted,
   selectActiveFilter,
   selectTodos,
+  removeItemAsync,
 } from "../redux/todos/todosSlice";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -16,6 +16,15 @@ function ContentFooter() {
   useEffect(() => {
     localStorage.setItem("activeFilter", activeFilter);
   }, [activeFilter]);
+
+  const handleDestroyAll = () => {
+    if (window.confirm("Are you sure?")) {
+      const completedItems = items.filter((item) => item.completed === true);
+      completedItems.forEach(async (element) => {
+        await dispatch(removeItemAsync(element.id));
+      });
+    }
+  };
 
   return (
     <footer className="footer">
@@ -52,10 +61,7 @@ function ContentFooter() {
         </li>
       </ul>
 
-      <button
-        className="clear-completed"
-        onClick={() => dispatch(clearCompleted())}
-      >
+      <button className="clear-completed" onClick={handleDestroyAll}>
         Clear completed
       </button>
     </footer>

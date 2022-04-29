@@ -31,7 +31,7 @@ export const toggleTodoAsync = createAsyncThunk(
 export const removeItemAsync = createAsyncThunk(
   "todos/removeItemAsync",
   async (id) => {
-    const res = await axios.delete(
+    await axios.delete(
       `${process.env.REACT_APP_API_BASE_ENDPOINT}/todos/${id}`
     );
     return id;
@@ -77,9 +77,9 @@ export const todosSlice = createSlice({
     changeActiveFilter: (state, action) => {
       state.activeFilter = action.payload;
     },
-    clearCompleted: (state) => {
-      state.items = [...state.items.filter((item) => item.completed === false)];
-    },
+    // clearCompleted: (state) => {
+    //   state.items = [...state.items.filter((item) => item.completed === false)];
+    // },
   },
   extraReducers: {
     // get to do
@@ -136,5 +136,5 @@ export function selectFilteredTodos(state) {
 }
 export const selectActiveFilter = (state) => state.todos.activeFilter;
 
-export const { changeActiveFilter, clearCompleted } = todosSlice.actions;
+export const { changeActiveFilter } = todosSlice.actions;
 export default todosSlice.reducer;
